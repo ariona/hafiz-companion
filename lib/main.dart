@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
-import "qurandb.dart";
-import "quranread.dart";
+import "data/qurandb.dart";
+import "pages/quranread.dart";
+import "pages/splashScreen.dart";
 
 void main() {
   runApp( new MyApp() );
@@ -15,14 +16,49 @@ class MyApp extends StatelessWidget{
       theme: new ThemeData(
         primaryColor: Colors.teal
       ),
-      routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => HomePage(),
-        '/activity' : (BuildContext context) => ActivityScreen(),
-        '/read': (BuildContext context) => QuranReadScreen()
+      home: new SplashScreen(),
+      onGenerateRoute: (RouteSettings settings) {
+        switch (settings.name) {
+          case '/homepage': return new MyCustomRoute(
+            builder: (_) => new HomePage(),
+            settings: settings,
+          );
+          case '/activity': return new MyCustomRoute(
+            builder: (_) => new ActivityScreen(),
+            settings: settings,
+          );
+          case '/activity': return new MyCustomRoute(
+            builder: (_) => new QuranReadScreen(),
+            settings: settings,
+          );
+        }
+        assert(false);
       }
+//      routes: <String, WidgetBuilder>{
+//        '/homepage': (BuildContext context) => HomePage(),
+//        '/activity' : (BuildContext context) => ActivityScreen(),
+//        '/read': (BuildContext context) => QuranReadScreen()
+//      }
     );
   }
 
+}
+
+class MyCustomRoute<T> extends MaterialPageRoute<T> {
+  MyCustomRoute({ WidgetBuilder builder, RouteSettings settings })
+      : super(builder: builder, settings: settings);
+
+  @override
+  Widget buildTransitions(BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
+    if (settings.isInitialRoute)
+      return child;
+    // Fades between routes. (If you don't want any animation,
+    // just return child.)
+    return new FadeTransition(opacity: animation, child: child);
+  }
 }
 
 class Activity {
@@ -40,12 +76,8 @@ class Activity {
 }
 
 class HomePage extends StatefulWidget{
-
-
-
   @override
   HomePageState createState(){
-    QuranDatabase.get().init();
     return new HomePageState();
   }
 }
@@ -56,6 +88,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
   List<Activity> _items;
   List _surahs = new List();
   Map _selectedSurah = new Map();
+  bool _isLoading;
+
 
   @override
   void initState() {
@@ -65,14 +99,16 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
     _items = new List<Activity>();
     _surahs = new List();
     _selectedSurah = new Map();
+    _isLoading = true;
 
-    QuranDatabase.get().init().then((data){
-      QuranDatabase.get().getSurahs().then((data){
-        setState((){
-          _surahs = data;
-        });
+
+    QuranDatabase().getSurahs().then((data){
+      setState((){
+        _surahs = data;
+        _isLoading = false;
       });
     });
+
 
   }
 
@@ -212,6 +248,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
         controller: _controller,
         children: [
           new Container(
+              color: Color(0xFFe9ecef),
+              child: new Center(
+                  child: new Text( "App is loading" + _isLoading.toString() )
+              )
+          ),
+          new Container(
             color: Color(0xFFe9ecef),
             child: _items.length == 0 ? new Text("No Activity") : new ListView.builder(
               itemCount: _items.length,
@@ -290,12 +332,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
                 child: new Text("No History, Finish your activity")
             )
           ),
-          new Container(
-            color: Color(0xFFe9ecef),
-            child: new Center(
-                child: new Text("Memorization Progress")
-            )
-          ),
+
 
         ]
 
@@ -442,7 +479,7 @@ class ActivityScreenState extends State<ActivityScreen> with SingleTickerProvide
 
     _controller = new TabController(length: 4, vsync: this);
 
-    QuranDatabase.get().getAyahsRange(1, 1, 7)
+    QuranDatabase().getAyahsRange(1, 1, 7)
       .then( (data){
         if (data==null) return;
         setState(() {

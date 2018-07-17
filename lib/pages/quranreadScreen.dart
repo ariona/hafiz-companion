@@ -45,24 +45,23 @@ class QuranReadScreenState extends State<QuranReadScreen> with SingleTickerProvi
           ),
         ),
         bottom: new PreferredSize(
-            child: new Directionality(
-              textDirection: TextDirection.rtl,
-              child: new TabBar(
-                controller: _controller,
-                isScrollable: true,
-                tabs: _surahs.map( (surah){
-
-                  return new Tab(
-                    child: new Text(
-                      surah["_id"].toString() + ": " + surah["name_english"].toString(),
-                    ),
-
-                  );
-
-                }).toList()
-              )
-            ), 
-            preferredSize: Size.fromHeight(48.0)
+          child: new Directionality(
+            textDirection: TextDirection.rtl,
+            child: new TabBar(
+              indicatorColor: new Color(0xFFFFDE80),
+              controller: _controller,
+              isScrollable: true,
+              tabs: _surahs.map( (surah){
+                return new Tab(
+                  child: new Text(
+                    surah["_id"].toString() + ": " + surah["name_english"].toString(),
+                    textDirection: TextDirection.ltr,
+                  ),
+                );
+              }).toList()
+            )
+          ),
+          preferredSize: Size.fromHeight(48.0)
         )
       ),
       body: new Directionality(

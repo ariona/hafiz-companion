@@ -81,7 +81,6 @@ import "package:path_provider/path_provider.dart";
       _db = await init();
       return _db;
     }
-//    QuranDatabase._internal();
 
     Future init() async {
       Directory documentDirectory = await getApplicationDocumentsDirectory();
@@ -106,6 +105,11 @@ import "package:path_provider/path_provider.dart";
       return await dbClient.rawQuery('SELECT * FROM surah_name');
     }
 
+    Future getSurahDetail(String id) async {
+      var dbClient = await db;
+      return await dbClient.rawQuery('SELECT * FROM surah_name WHERE surah_id=$id');
+    }
+
     Future getSurah(String id) async{
       var dbClient = await db;
       var result = await dbClient.rawQuery('SELECT * FROM quran WHERE surah_id=$id ORDER BY verse_id');
@@ -115,7 +119,7 @@ import "package:path_provider/path_provider.dart";
 
     Future getAyahsRange(int surahid, int start, int end) async {
       var dbClient = await db;
-      var result = await dbClient.rawQuery('SELECT * FROM quran WHERE surah_id=$surahid LIMIT ${end-start+1} OFFSET ${start-1}');
+      var result = await dbClient.rawQuery('SELECT * FROM quran WHERE surah_id=$surahid ORDER BY verse_id LIMIT ${end-start+1} OFFSET ${start-1}');
       return result.length == 0 ? null : result;
     }
 

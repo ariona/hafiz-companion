@@ -2,7 +2,7 @@ class Activity {
   final int surah;
   final int start;
   final int end;
-  final String created;
+  final DateTime created;
 
   const Activity({
     this.surah,

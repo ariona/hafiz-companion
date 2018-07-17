@@ -10,6 +10,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   sqflite: any
   path_provider: "^0.3.1"
+  intl: any
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +35,7 @@ flutter:
   assets:
     - assets/images/header.png
     - assets/wordbyword.db
+    - assets/circle-deco.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

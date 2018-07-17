@@ -24,9 +24,18 @@ class SurahDialogState extends State<SurahDialog>{
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             new Text("Select Surah",style: TextStyle(color:Colors.white,fontSize: 24.0,fontWeight: FontWeight.bold)),
-            new TextField(
-              decoration: new InputDecoration(
-                  fillColor: Colors.red
+            new Container(
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
+              margin: EdgeInsets.only(top:10.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(30.0)),
+              ),
+              child: new TextField(
+                decoration: InputDecoration(
+                  hintText: "Search Surah",
+                  border: InputBorder.none
+                ),
               ),
             )
           ],
@@ -35,7 +44,7 @@ class SurahDialogState extends State<SurahDialog>{
       contentPadding: new EdgeInsets.all(0.0),
       children: <Widget>[
         new Container(
-          height: 200.0,
+          height: 300.0,
           child: new ListView.builder(
             itemCount: widget.surahs.length,
             itemBuilder: (BuildContext context, int index){

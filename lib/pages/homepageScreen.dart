@@ -2,7 +2,9 @@ import "package:flutter/material.dart";
 import "../data/qurandb.dart";
 import "../model/Activity.dart";
 import "../pages/quranreadScreen.dart";
+import "../pages/activityScreen.dart";
 import "../widgets/modalActivity.dart";
+import "package:intl/intl.dart";
 
 
 class HomePage extends StatefulWidget{
@@ -47,7 +49,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
           surah: int.parse(value[0]),
           start: int.parse(value[1]),
           end: int.parse(value[2]),
-          created: new DateTime.now().toString()
+          created: new DateTime.now()
         )
       );
     });
@@ -109,16 +111,16 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
               ),
 
               new TabBar(
-                  indicatorColor: new Color(0xFFFFDE80),
-                  controller: _controller,
-                  tabs: [
-                    new Tab(
-                      text: "Activity",
+                indicatorColor: new Color(0xFFFFDE80),
+                controller: _controller,
+                tabs: [
+                  new Tab(
+                    text: "Activity",
 
-                    ),
-                    new Tab(text: "History"),
-                    new Tab(text: "Progress"),
-                  ]
+                  ),
+                  new Tab(text: "History"),
+                  new Tab(text: "Progress"),
+                ]
               )
             ],
           ),
@@ -154,77 +156,84 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
         children: [
 
           new Container(
-              color: Color(0xFFe9ecef),
-              child: _items.length == 0 ? new Text("No Activity") : new ListView.builder(
-                itemCount: _items.length,
-                itemBuilder: (BuildContext context, int index){
-                  return new Card(
-                    child: new Column(
-                      children: <Widget>[
-                        new ListTile(
-                          leading: new CircleAvatar(
-                              backgroundColor: Color(0xFF33D8C4),
-                              child: new Text("2", style: TextStyle(color: Color(0xFFFFFFFF),fontWeight: FontWeight.bold))
-                          ),
-                          title: new Text("Al-Baqarah", style: TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: new Text("Ayah 20 – 25"),
-                          trailing: new Text("البقرة", style: TextStyle(
-                              fontSize: 24.0
-                          )),
-                        ),
-                        new Container(
-                            padding: EdgeInsets.all(14.0),
-                            color: Color(0xFFF3F3F3),
-                            child: new Row(
-                              children: <Widget>[
-                                new Expanded(
-                                    child: new RichText(
-                                        text: new TextSpan(
-                                            children: <TextSpan>[
-                                              new TextSpan(
-                                                  text: 'Started at ',
-                                                  style: TextStyle(color:Colors.black45)
-                                              ),
-                                              new TextSpan(
-                                                  text: "1 July 2018",
-                                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)
-                                              )
-                                            ]
-                                        )
-                                    )
-                                ),
-
-                                new OutlineButton(
-                                  borderSide: BorderSide(
-                                      color: Color(0xFF36D7C7),
-                                      style: BorderStyle.solid,
-                                      width: 5.0
-                                  ),
-                                  color: Colors.teal,
-                                  onPressed: (){
-                                    Navigator.of(context).pushNamed('/activity');
-                                  },
-                                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                                  child: new Text("Memorize",style:TextStyle(color: Color(0xFF495057))),
-                                  highlightColor: Color(0xFF36D7C7),
-                                  highlightedBorderColor: Color(0xFF36D7C7),
-                                  textColor: Color(0xFF36D7C7),
-                                )
-                              ],
+            color: Color(0xFFe9ecef),
+            child: _items.length == 0 ? new Text("No Activity") : new ListView.builder(
+              itemCount: _items.length,
+              itemBuilder: (BuildContext context, int index){
+                return new Card(
+                  child: new Column(
+                    children: <Widget>[
+                      new ListTile(
+                        leading: new CircleAvatar(
+                            backgroundColor: Color(0xFF33D8C4),
+                            child: new Text(
+                              _surahs[_items[index].surah-1]["_id"].toString(),
+                              style: TextStyle(color: Color(0xFFFFFFFF),fontWeight: FontWeight.bold)
                             )
-                        )
-                      ],
-                    ),
-                  );
-                },
-                padding: EdgeInsets.only(
-                    top: 10.0,
-                    left: 10.0,
-                    right: 10.0,
-                    bottom: 100.0
-                ),
+                        ),
+                        title: new Text(_surahs[_items[index].surah-1]["name_english"], style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: new Text("Ayah ${_items[index].start} – ${_items[index].end}"),
+                        trailing: new Text(_surahs[_items[index].surah-1]["name_arabic"], style: TextStyle(
+                            fontSize: 24.0
+                        )),
+                      ),
+                      new Container(
+                        padding: EdgeInsets.all(14.0),
+                        color: Color(0xFFF3F3F3),
+                        child: new Row(
+                          children: <Widget>[
+                            new Expanded(
+                              child: new RichText(
+                                text: new TextSpan(
+                                  children: <TextSpan>[
+                                    new TextSpan(
+                                      text: 'Started at ',
+                                      style: TextStyle(color:Colors.black45)
+                                    ),
+                                    new TextSpan(
+                                      text: new DateFormat("d MMMM y").format(_items[index].created),
+                                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)
+                                    )
+                                  ]
+                                )
+                              )
+                            ),
 
-              )
+                            new OutlineButton(
+                              borderSide: BorderSide(
+                                  color: Color(0xFF36D7C7),
+                                  style: BorderStyle.solid,
+                                  width: 5.0
+                              ),
+                              color: Colors.teal,
+                              onPressed: (){
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ActivityScreen(data: _items[index]),
+                                  ),
+                                );
+                              },
+                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                              child: new Text("Memorize",style:TextStyle(color: Color(0xFF495057))),
+                              highlightColor: Color(0xFF36D7C7),
+                              highlightedBorderColor: Color(0xFF36D7C7),
+                              textColor: Color(0xFF36D7C7),
+                            )
+                          ],
+                        )
+                      )
+                    ],
+                  ),
+                );
+              },
+              padding: EdgeInsets.only(
+                top: 10.0,
+                left: 10.0,
+                right: 10.0,
+                bottom: 100.0
+              ),
+
+            )
           ),
           new Container(
             color: Color(0xFFe9ecef),
@@ -238,8 +247,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
                   child: new Text( "App is loading" + _isLoading.toString() )
               )
           ),
-
-
         ]
 
       ),

@@ -17,8 +17,8 @@ class NewActivityModalState extends State<NewActivityModal> {
   String _selectedId;
   int _totalAyah;
 
-  final _startAyah = TextEditingController();
-  final _endAyah = TextEditingController();
+  final _startAyah = TextEditingController(text: "1");
+  final _endAyah = TextEditingController(text:"7");
 
   @override
   initState() {
@@ -45,6 +45,7 @@ class NewActivityModalState extends State<NewActivityModal> {
     setState((){
       _selectedId = value[0].toString();
       _totalAyah = int.parse(value[1]);
+      _endAyah.text = _totalAyah.toString();
     });
   }
 
@@ -122,8 +123,12 @@ class NewActivityModalState extends State<NewActivityModal> {
                     controller: _startAyah,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      hintText: "1"
+                      hintText: "1",
                     ),
+                    onChanged: (value){
+                      if (int.parse(value) > _totalAyah || int.parse(value) < 1 )
+                        _startAyah.text = "1";
+                    },
                   ),
                   flex: 1,
                 ),
@@ -151,6 +156,12 @@ class NewActivityModalState extends State<NewActivityModal> {
                     decoration: InputDecoration(
                       hintText: _totalAyah.toString()
                     ),
+                    onChanged: (value){
+                      if ( int.parse(value) > _totalAyah || int.parse(value) < int.parse(_startAyah.text))
+                        _endAyah.text = _totalAyah.toString();
+                      else
+                        _endAyah.text = value;
+                    },
                   ),
                   flex: 1,
                 ),

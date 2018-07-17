@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "../data/qurandb.dart";
 import "../model/Activity.dart";
+import "../widgets/ayahListItem.dart";
 
 class ActivityScreen extends StatefulWidget{
   final Activity data;
@@ -80,73 +81,14 @@ class ActivityScreenState extends State<ActivityScreen> with SingleTickerProvide
             children: [
               new Container(
                 child: new ListView.builder(
-                itemCount: _surah.length,
-                itemBuilder: (BuildContext context, int index){
-                  return new Container
-                    (
-                      decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: BorderDirectional(
-                        bottom: BorderSide(
-                          color: Color(0xFFF1F1F1),
-                          style: BorderStyle.solid,
-                          width: 5.0
-                        )
-                      )
-                    ),
-                    child: new Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        new Container(
-                            width: 50.0,
-                            height: 64.0,
-                            child: new Stack(
-                              alignment: Alignment(0.0, 0.0),
-                              children: <Widget>[
-                                new Positioned(
-                                    width: 35.0,
-                                    height: 45.0,
-                                    child: new Container(
-                                        child: new Image.asset(
-                                          "assets/images/circle-deco.png",
-                                          width: 35.0,
-                                          height: 45.0,
-                                        )
-                                    )
-                                ),
-                                new Text(_surah[index]["verse_id"].toString(), style: TextStyle(fontSize:12.0,fontWeight: FontWeight.w500)),
-                              ],
-                            )
-//                          child: new Center(
-//                              child: new Text(_surah[index]["verse_id"].toString())
-//                          ),
-                        ),
-                        new Expanded(
-                          flex: 1,
-                          child: new Container(
-                            padding: EdgeInsets.all(15.0),
-                            decoration: BoxDecoration(
-                              border: BorderDirectional(
-                                start: BorderSide(
-                                  width: 1.5,
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFFF1F1F1)
-                                )
-                              )
-                            ),
-                            child: new Text(
-                              _surah[index]["arabic"].toString(),
-                              textDirection: TextDirection.rtl,
-                              style: TextStyle(
-                                  fontSize: 20.0
-                              ),
-                            ),
-                          ),
-                        ),
+                  itemCount: _surah.length,
+                  itemBuilder: (BuildContext context, int index){
+                    return new AyahListItem(
+                      ayahNumber: _surah[index]["verse_id"],
+                      arabic: _surah[index]["arabic"].toString(),
+                      translation: _surah[index]["indo"].toString(),
+                    );
 
-                      ],
-                    ),
-                  );
                   },
                 )
               ),

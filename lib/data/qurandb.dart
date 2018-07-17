@@ -107,7 +107,8 @@ import "package:path_provider/path_provider.dart";
 
     Future getSurahDetail(String id) async {
       var dbClient = await db;
-      return await dbClient.rawQuery('SELECT * FROM surah_name WHERE surah_id=$id');
+      var result = await dbClient.rawQuery('SELECT * FROM surah_name WHERE surah_no="$id"');
+      return result.length == 0 ? null : result[0];
     }
 
     Future getSurah(String id) async{

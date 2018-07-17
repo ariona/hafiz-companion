@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "../data/qurandb.dart";
+import "../widgets/ayahListItem.dart";
 
 class QuranReadScreen extends StatefulWidget{
 
@@ -51,6 +52,7 @@ class QuranReadScreenState extends State<QuranReadScreen> with SingleTickerProvi
               indicatorColor: new Color(0xFFFFDE80),
               controller: _controller,
               isScrollable: true,
+              indicatorSize: TabBarIndicatorSize.tab,
               tabs: _surahs.map( (surah){
                 return new Tab(
                   child: new Text(
@@ -102,20 +104,28 @@ class SurahSingleScreen extends StatefulWidget{
 class SurahSingleScreenState extends State<SurahSingleScreen> {
 
   List _surah;
+  Map _surahDetail;
 
   @override
   void initState() {
 
     super.initState();
     _surah = new List();
+    _surahDetail = new Map();
 
-      QuranDatabase().getSurah(widget.id.toString())
-        .then( (surah) {
-          setState((){
-            _surah = surah;
-          });
+    QuranDatabase().getSurah(widget.id.toString())
+      .then( (surah) {
+        setState((){
+          _surah = surah;
+        });
+    });
 
-      });
+    QuranDatabase().getSurahDetail(widget.id.toString())
+      .then( (detail){
+        setState((){
+          _surahDetail = detail;
+        });
+    });
 
   }
 
@@ -127,40 +137,69 @@ class SurahSingleScreenState extends State<SurahSingleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return new Container(
       key: widget.key ,
       color: Color(0xFFF0F0F0),
       child: new AnimatedOpacity(
         opacity: _surah.length == 0 ? 0.0 : 1.0 ,
-        duration: Duration(milliseconds: 250),
+        duration: Duration(milliseconds: 150),
         child: new ListView.builder(
           key: widget.key,
           itemCount: _surah.length,
           itemBuilder: (BuildContext context, int index){
-            return new Container(
-              decoration: BoxDecoration(
-                color: Color(0xFFFFFFFF),
-                border: BorderDirectional(
-                  bottom: BorderSide(
-                    width: 5.0,
-                    style: BorderStyle.solid,
-                    color: Color(0xFFF0F0F0)
+            if (index==0){
+              return new Column(
+                children: <Widget>[
+                  new Container(
+                    child: new Column(
+                      children: <Widget>[
+                        new Directionality(textDirection: TextDirection.ltr,
+                            child: new Row(
+                              children: <Widget>[
+                                new Container(
+                                  width: 70.0,
+                                  child:new Center(child:new Text(_surahDetail["type"].toString())),
+                                ),
+
+                                new Expanded(child: new Center(child:Text(_surahDetail["arti_nama"].toString())),flex:1),
+                                new Container(
+                                  width: 70.0,
+                                  child:new Center(child:Text(_surahDetail["ayah_number"].toString())),
+                                ),
+                              ],
+                            ),
+
+                        ),
+                        ( int.parse(widget.id) != 1 && int.parse(widget.id) != 9 )
+                            ? new Text("Bismillah")
+                            : new Container(),
+                      ],
+                    )
+                  ),
+                  new Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: new AyahListItem(
+                      ayahNumber: _surah[index]["verse_id"],
+                      arabic: _surah[index]["arabic"].toString(),
+                      translation: _surah[index]["indo"].toString(),
+                    )
                   )
-                )
-              ),
-              padding: EdgeInsets.only(
-                bottom: 20.0,
-                top: 20.0,
-                left: 15.0,
-                right: 15.0
-              ),
-              child: new Text(
-                  _surah[index]["arabic"].toString(),
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(fontSize: 20.0)
-              )
-            );
+                ],
+              );
+
+            } else {
+              return new Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: new AyahListItem(
+                    ayahNumber: _surah[index]["verse_id"],
+                    arabic: _surah[index]["arabic"].toString(),
+                    translation: _surah[index]["indo"].toString(),
+                  )
+              );
+            }
+
+
           }
         ),
       )
